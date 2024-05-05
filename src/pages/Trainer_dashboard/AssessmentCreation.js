@@ -12,7 +12,8 @@ const TrainerAssessment = () => {
     const [questions, setQuestions] = useState([]);
     const [topics, setTopics] = useState([]);
     const [selectedTopics, setSelectedTopics] = useState([]);
-  
+    const [questionstodisplay, setQuestionstodisplay] = useState([]);
+
     useEffect(() => {
       const fetchAssessments = async () => {
         const q = query(collection(db, "assessments"));
@@ -43,9 +44,10 @@ const TrainerAssessment = () => {
         if (!acc[question.topic]) {
           acc[question.topic] = [];
         }
-        if (!acc[question.topic].some((q) => q.id === question.id)) {
-          acc[question.topic].push(question);
+        if (!acc[question.topic].some((q) => q.questionText === question.questionText && JSON.stringify(q.options) === JSON.stringify(question.options))) {
+            acc[question.topic].push(question);
         }
+        
         return acc;
       }, {});
       setTopics(
@@ -74,15 +76,23 @@ const TrainerAssessment = () => {
             correctAnswer: '',
             topic: ''
         };
-        setQuestions([...questions, newQuestion]);
+        setQuestionstodisplay([...questionstodisplay, newQuestion]);
     };
+
 
     const generateQuestionSet = () => {
         const selectedQuestions = questions.filter((question) => selectedTopics.includes(question.topic));
-        const randomIndices = [...Array(10)].map(() => Math.floor(Math.random() * selectedQuestions.length));
-        const selectedQuestionSet = randomIndices.map(index => selectedQuestions[index]);
-        setQuestions(selectedQuestionSet);
+        const selectedQuestionSet = selectedQuestions.reduce((acc, question) => {
+            if (!acc.some((q) => q.questionText === question.questionText)) {
+                acc.push(question);
+            }
+            return acc;
+        }, []);
+        setQuestionstodisplay(selectedQuestionSet);
     };
+    
+    
+    
 
     const saveAssessment = async () => {
         try {
@@ -91,7 +101,7 @@ const TrainerAssessment = () => {
                 description: assessmentDetails.description
             });
 
-            questions.forEach(async (question) => {
+            questionstodisplay.forEach(async (question) => {
                 await addDoc(collection(assessmentRef, 'questions'), {
                     questionText: question.questionText,
                     options: question.options,
@@ -144,7 +154,7 @@ const TrainerAssessment = () => {
                     </label>
                 </div>
             ))}
-            {questions.map((question, index) => (
+            {questionstodisplay.map((question, index) => (
                 <div key={index} className="trainer-question-box">
                     <h3 className="trainer-question-title">Question {index + 1}</h3>
                     <input
@@ -153,7 +163,7 @@ const TrainerAssessment = () => {
                         placeholder="Question Text"
                         value={question.questionText}
                         onChange={(e) => {
-                            const newQuestions = [...questions];
+                            const newQuestions = [...questionstodisplay];
                             newQuestions[index].questionText = e.target.value;
                             setQuestions(newQuestions);
                         }}
@@ -166,9 +176,9 @@ const TrainerAssessment = () => {
                             placeholder={`Option ${optionIndex + 1}`}
                             value={option}
                             onChange={(e) => {
-                                const newQuestions = [...questions];
+                                const newQuestions = [...questionstodisplay];
                                 newQuestions[index].options[optionIndex] = e.target.value;
-                                setQuestions(newQuestions);
+                                setQuestionstodisplay(newQuestions);
                             }}
                         />
                     ))}
@@ -178,9 +188,9 @@ const TrainerAssessment = () => {
                         placeholder="Correct Answer"
                         value={question.correctAnswer}
                         onChange={(e) => {
-                            const newQuestions = [...questions];
+                            const newQuestions = [...questionstodisplay];
                             newQuestions[index].correctAnswer = e.target.value;
-                            setQuestions(newQuestions);
+                            setQuestionstodisplay(newQuestions);
                         }}
                     />
                     <input
@@ -189,9 +199,9 @@ const TrainerAssessment = () => {
                         placeholder="Topic"
                         value={question.topic}
                         onChange={(e) => {
-                            const newQuestions = [...questions];
+                            const newQuestions = [...questionstodisplay];
                             newQuestions[index].topic = e.target.value;
-                            setQuestions(newQuestions);
+                            setQuestionstodisplay(newQuestions);
                         }}
                     />
                 </div>
