@@ -133,7 +133,7 @@ const TrainerAssessment = () => {
                 value={assessmentDetails.description}
                 onChange={(e) => setAssessmentDetails({ ...assessmentDetails, description: e.target.value })}
             />
-            <button className="trainer-generate-question-set-btn" onClick={generateQuestionSet}>
+            <button className="trainer-add-question-btn" onClick={generateQuestionSet}>
                 Generate Question Set
             </button>
             {topics.map((topic, index) => (

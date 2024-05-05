@@ -17,8 +17,10 @@
 }
 
 .trainer-assessment-textfield {
-  width: 80%;
-  margin-bottom: 20px;
+  width: 70%;
+  margin-bottom: 20px;  
+  border-radius: 10px;
+
 }
 
 .trainer-question-box {
@@ -27,17 +29,24 @@
   padding: 10px;
   margin: 10px 0;
   width: 90%;
+  border-radius: 10px;
+
 }
 
 .trainer-question-title {
   font-size: 1.5rem;
   margin-bottom: 10px;
   width: 90%;
+  border-radius: 10px;
+
 }
 
 .trainer-option-textfield {
   width: 90%;
   margin-bottom: 10px;
+  border-radius: 10px;
+
+
 }
 
 .trainer-add-question-btn {
