@@ -20,50 +20,74 @@ const MentorDashboard = () => {
 
     const fetchStudentScores = async () => {
         const usersQuerySnapshot = await getDocs(collection(db, 'users'));
-        const scores = [];
-
-        const assessmentsSnapshot = await getDocs(collection(db, 'assessments')); // Fetch assessments
-
-        const assessmentMap = new Map(); // Create a map to store assessment details for quick access
-        assessmentsSnapshot.forEach((doc) => {
-            assessmentMap.set(doc.id, doc.data()); // Store assessment details in the map using assessmentId as key
-        });
-
-        const usersMap = new Map(); // Create a map to store user details for quick access
-        usersQuerySnapshot.forEach((doc) => {
-            usersMap.set(doc.id, doc.data()); // Store user details in the map using userId as key
-        });
-
+        const scoresMap = new Map(); // Map to store the best attempt for each student
+    
         usersQuerySnapshot.forEach((userDoc) => {
             const userData = userDoc.data();
             const userId = userDoc.id;
             if (userData.scores && userData.scores.length > 0) {
-                userData.scores.forEach((scoreData) => {
-                    const assessmentTitle = assessmentMap.get(scoreData.assessmentId).title; // Get assessment title from map using assessmentId
-                    const studentName = usersMap.get(userId).username; // Get student name from map using userId
-                    scores.push({
+                let bestAttempt = userData.scores.reduce((prev, current) => (prev.score > current.score) ? prev : current);
+                if (!scoresMap.has(userId)) {
+                    scoresMap.set(userId, {
                         userId: userId,
-                        assessmentId: scoreData.assessmentId,
-                        assessmentTitle: assessmentTitle,
-                        score: scoreData.score,
-                        username: studentName,
+                        assessmentId: bestAttempt.assessmentId,
+                        score: bestAttempt.score,
+                        username: userData.username,
                         role: userData.role,
-                        topicScores: scoreData.topicScores
+                        topicScores: bestAttempt.topicScores
                     });
-                });
+                } else {
+                    const existingBestAttempt = scoresMap.get(userId);
+                    if (bestAttempt.score > existingBestAttempt.score) {
+                        scoresMap.set(userId, {
+                            userId: userId,
+                            assessmentId: bestAttempt.assessmentId,
+                            score: bestAttempt.score,
+                            username: userData.username,
+                            role: userData.role,
+                            topicScores: bestAttempt.topicScores
+                        });
+                    }
+                }
             }
         });
-        setStudentScores(scores);
+    
+        setStudentScores([...scoresMap.values()]); // Convert map values back to an array for rendering
     };
-
+    
+    
+    
     const handleViewAnalytics = async (assessmentId) => {
         const q = query(collection(db, 'scores'), where('assessmentId', '==', assessmentId));
         const querySnapshot = await getDocs(q);
         const fetchedScores = querySnapshot.docs.map(doc => doc.data());
+        
+        // Filter out only the best attempt for each user
+        const bestAttemptsMap = new Map();
+        fetchedScores.forEach(score => {
+            if (!bestAttemptsMap.has(score.userId)) {
+                bestAttemptsMap.set(score.userId, score);
+            } else {
+                const existingBestAttempt = bestAttemptsMap.get(score.userId);
+                if (score.score > existingBestAttempt.score) {
+                    bestAttemptsMap.set(score.userId, score);
+                }
+            }
+        });
+    
+        const bestAttempts = Array.from(bestAttemptsMap.values());
         setSelectedAssessmentId(assessmentId);
-        setSelectedAssessmentScores(fetchedScores);
+        setSelectedAssessmentScores(bestAttempts);
     };
+    
 
+    // const calculateOverallAnalytics = (userId) => {
+    //     const studentAttempts = selectedAssessmentScores.filter(score => score.userId === userId);
+    //     const totalAttempts = studentAttempts.length;
+    //     const totalScore = studentAttempts.reduce((acc, curr) => acc + curr.score, 0);
+    //     const averageScore = totalScore / totalAttempts;
+    //     return { totalAttempts, averageScore };
+    // };
     const calculateOverallAnalytics = (userId) => {
         const studentAttempts = selectedAssessmentScores.filter(score => score.userId === userId);
         const totalAttempts = studentAttempts.length;
@@ -71,12 +95,21 @@ const MentorDashboard = () => {
         const averageScore = totalScore / totalAttempts;
         return { totalAttempts, averageScore };
     };
-
+    
+    const studentAnalyticsMap = new Map(); // Create a map to store overall analytics for each student
+    
+    studentScores.forEach((studentScore) => {
+        if (!studentAnalyticsMap.has(studentScore.userId)) {
+            const { totalAttempts, averageScore } = calculateOverallAnalytics(studentScore.userId);
+            studentAnalyticsMap.set(studentScore.userId, { totalAttempts, averageScore });
+        }
+    
+    });
     const closeAnalytics = () => {
         setSelectedAssessmentId(null);
         setSelectedAssessmentScores([]);
     };
-
+console.log()
     return (
         <div className="mentor-dashboard-container">
             <h1 className="analytics-title">Mentor Dashboard</h1>
@@ -108,7 +141,7 @@ const MentorDashboard = () => {
                                 <th>Student Name</th>
                                 <th>Score</th>
                                 <th>Topics</th>
-                                <th>Overall Analytics</th>
+                                {/* <th>Overall Analytics</th> */}
                             </tr>
                         </thead>
                         <tbody>
@@ -127,19 +160,13 @@ const MentorDashboard = () => {
                                         ))}
                                     </td>
                                     <td>
-                                        {studentScores.map(studentScore => {
-                                            if (studentScore.userId === score.userId) {
-                                                const { totalAttempts, averageScore } = calculateOverallAnalytics(studentScore.userId);
-                                                return (
-                                                    <div key={studentScore.userId}>
-                                                        <p>Total Attempts: {totalAttempts}</p>
-                                                        <p>Average Score: {averageScore.toFixed(2)}</p>
-                                                    </div>
-                                                );
-                                            }
-                                            return null;
-                                        })}
-                                    </td>
+    {studentAnalyticsMap.has(score.userId) && (
+        <div>
+            {/* <p>Total Attempts: {studentAnalyticsMap.get(score.userId).totalAttempts}</p> */}
+            {/* <p>Average Score: {studentAnalyticsMap.get(score.userId).averageScore.toFixed(2)}</p> */}
+        </div>
+    )}
+</td>
                                 </tr>
                             ))}
                         </tbody>

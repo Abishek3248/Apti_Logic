@@ -5,15 +5,12 @@
 }
 
 .trainer-assessment-title {
-  font-size: 2rem;
   margin-bottom: 20px;
   font-size: 2rem;
   font-weight: bolder;
   color: #03045e;
   font-family: "Luckiest Guy", cursive;
 
-  top: 10%;
-  left: 15%;
 }
 
 .trainer-assessment-textfield {
@@ -62,6 +59,7 @@
 .trainer-add-question-btn:hover {
   background-color: #0056b3;
 }
+
 
 .trainer-save-assessment-btn {
   padding: 10px 20px;

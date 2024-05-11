@@ -4,6 +4,7 @@ import { collection, getDocs , getDoc, query ,doc} from 'firebase/firestore';
 import { db } from '../../firebase';
 import { useUser } from '../UserContext';
 import './Student.css'
+import Forum from './Forum';
 const StudentDashboard = () => {
     const [assessments, setAssessments] = useState([]);
     const { user } = useUser();
@@ -27,12 +28,19 @@ const StudentDashboard = () => {
     }, []);
 
     return (
+        <>
         <div className="student-dashboard">
+            
             <div className="student-dashboard-title">
+           
                 <h3>Welcome, {user ? userData.username : 'Guest'}!</h3>
-                <h4>Available Assessments</h4>
+
+         <h4 className='available-assessment'>Available Assessments</h4>
+
+
             </div>
             <div className="student-dashboard-assessments">
+
                 {assessments.map(assessment => (
                     <div key={assessment.id} className="assessment-card">
                   <div className='assessment-details'> 
@@ -53,7 +61,11 @@ const StudentDashboard = () => {
                     
                 ))}
             </div>
+            <div className='footer'><span>Have any doubts make use of our </span><Link to={`/forum`} className="forum-button">Discussions  </Link>
+</div>
         </div>
+    
+       </>
     );
 };
 

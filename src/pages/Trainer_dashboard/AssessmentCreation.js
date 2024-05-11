@@ -118,7 +118,7 @@ const TrainerAssessment = () => {
 
     return (
         <div className="trainer-assessment">
-            <h2 className="trainer-assessment-title assessment-head">Trainer Assessment</h2>
+            <h2 className="trainer-assessment-title">Trainer Assessment</h2>
             <input
                 className="trainer-assessment-textfield"
                 type="text"
@@ -126,10 +126,13 @@ const TrainerAssessment = () => {
                 value={assessmentDetails.title}
                 onChange={(e) => setAssessmentDetails({ ...assessmentDetails, title: e.target.value })}
             />
-            <textarea
+           
+            <input
                 className="trainer-assessment-textfield"
                 placeholder="Description"
+                type="text"
                 rows={9}
+                style={{"height":"100px","paddingTop":"0"}}
                 value={assessmentDetails.description}
                 onChange={(e) => setAssessmentDetails({ ...assessmentDetails, description: e.target.value })}
             />
@@ -141,6 +144,7 @@ const TrainerAssessment = () => {
                     <label>
                         <input
                             type="checkbox"
+                            className='cyberpunk-checkbox'
                             checked={selectedTopics.includes(topic.topic)}
                             onChange={() => {
                                 if (selectedTopics.includes(topic.topic)) {
