@@ -233,3 +233,31 @@ font-weight: bolder;
     padding: 8px 16px;
   }
 }
+/* Home.css */
+
+.alert {
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 5px;
+  color: #721c24;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+}
+
+.alert-success {
+  color: #155724;
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+}
+
+.alert-info {
+  color: #0c5460;
+  background-color: #d1ecf1;
+  border-color: #bee5eb;
+}
+
+.alert-warning {
+  color: #856404;
+  background-color: #fff3cd;
+  border-color: #ffeeba;
+}

@@ -1,0 +1,121 @@
+#updateButton{
+    margin-top: 69px;
+}
+@media only screen and (max-width: 768px) {
+    
+}
+/* General button styling */
+.custom-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #6b46c1;
+    border: 1px solid #d6bcfa;
+    border-radius: 9999px;
+    background-color: transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .custom-button:hover {
+    color: white;
+    background-color: #6b46c1;
+    border-color: transparent;
+  }
+  
+  .custom-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(107, 70, 193, 0.4);
+  }
+  
+  /* Modal styling */
+  .custom-modal {
+    position: fixed;
+    z-index: 1050;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    outline: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.5);
+  }
+  
+  .custom-modal-content {
+    position: relative;
+    width: 500px;
+    max-width: 100%;
+    margin: 1.75rem auto;
+    background-color: white;
+    border-radius: 0.3rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.5);
+  }
+  
+  .custom-modal-header, .custom-modal-footer {
+    padding: 1rem;
+    border-bottom: 1px solid #dee2e6;
+  }
+  
+  .custom-modal-footer {
+    border-top: 1px solid #dee2e6;
+  }
+  
+  .custom-modal-body {
+    position: relative;
+    padding: 1rem;
+  }
+  
+  .custom-close {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+    color: #000;
+    text-shadow: 0 1px 0 #fff;
+    opacity: 0.5;
+    cursor: pointer;
+  }
+  
+  .custom-close:hover {
+    color: #000;
+    text-decoration: none;
+    opacity: 0.75;
+  }
+  
+  /* Form styling */
+  .custom-form {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+  }
+  
+  .form-label {
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: #4a5568;
+  }
+  
+  .form-input {
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 0.375rem;
+    transition: all 0.2s ease;
+  }
+  
+  .form-input:focus {
+    border-color: #6b46c1;
+    background-color: white;
+    outline: none;
+  }
+  

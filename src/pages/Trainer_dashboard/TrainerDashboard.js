@@ -1,15 +1,32 @@
 import React, { useState, useEffect } from "react";
-import { collection, getDocs, query, doc, getDoc } from "firebase/firestore";
+import { collection, getDocs, query, doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import "./TrainerDashboard.css";
 import { Link } from "react-router-dom";
-
+import UploadVideo from "./Uploadvideomodal"; // Import the updated UploadVideo component
 
 const TrainerDashboard = () => {
   const [assessments, setAssessments] = useState([]);
   const [questions, setQuestions] = useState([]);
   const [topics, setTopics] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [currentTopic, setCurrentTopic] = useState(null);
+  const [topicsforvideo, setTopicsforvideo] = useState([]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "topics"));
+        const topicsData = querySnapshot.docs.map((doc) => doc.data());
+        setTopicsforvideo(topicsData);
+      } catch (error) {
+        console.error("Error fetching topics: ", error);
+      }
+    };
+
+    fetchData();
+  }, []); 
+  console.log("video",topicsforvideo)
   useEffect(() => {
     const fetchAssessments = async () => {
       const q = query(collection(db, "assessments"));
@@ -49,13 +66,12 @@ const TrainerDashboard = () => {
       Object.entries(topicsMap).map(([topic, questions]) => ({
         topic,
         questions,
-        open: false, // Initialize open state to false
+        open: false,
+        youtubelink: ""
       }))
     );
   }, [questions]);
-  
-  
-  console.log("topics", topics);
+
   const handleClick = (clickedTopic) => {
     setTopics((prevTopics) =>
       prevTopics.map((topic) =>
@@ -63,9 +79,37 @@ const TrainerDashboard = () => {
       )
     );
   };
-  
+
+  const handleShowModal = (topic) => {
+    setCurrentTopic(topic);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setCurrentTopic(null);
+  };
+
+  const handleSaveVideo = async (topic, videoLink) => {
+    setTopics((prevTopics) =>
+      prevTopics.map((t) =>
+        t.topic === topic.topic ? { ...t, youtubelink: videoLink } : t
+      )
+    );
+
+    try {
+      await setDoc(doc(db, "topics", topic.topic), {
+        topic: topic.topic,
+        youtubelink: videoLink,
+      });
+    } catch (error) {
+      console.error("Error saving video link: ", error);
+    }
+  };
+
   return (
     <>
+   
       <div className="trainer-overall">
         <h2 className="trainer-head-here"> Trainer Dashboard </h2>
         <div className="trainer-dashboard">
@@ -73,28 +117,47 @@ const TrainerDashboard = () => {
             <h4 className="trainer-head-2-here"></h4>
           </div>
           <div className="trainer-dashboard-assessments">
-  {topics.map((topic, index) => (
-    <div key={index} className="trainer-assessment-card" onClick={() => handleClick(topic)}>
-      <div className="assessment-details">
-        <h5 className="text-title">{topic.topic}</h5>
-        {topic.open ? (
-          <ul>
-            {topic.questions.map((question, qIndex) => (
-              <li key={qIndex}>{question.questionText}</li>
+            {topicsforvideo.map((topic, index) => (
+      
+              <div key={index} className="trainer-assessment-card">
+                <div onClick={() => handleClick(topic)}>
+                  <h5 className="text-title">{topic.topic}</h5>
+                  
+                 
+                      <iframe
+                        width="300"
+                        height="200"
+                        src={topic.videoLink}
+                        title="YouTube video player"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      ></iframe>
+                    
+                </div>
+                {/* <button
+                  className="upload-video-btn"
+                  onClick={() => handleShowModal(topic)}
+                >
+                  Upload Video
+                </button> */}
+              </div>
             ))}
-          </ul>
-        ) : null}
-      </div>
-    </div>
-  ))}
-</div>
-
+          </div>
         </div>
         <Link to="/create-assessment" style={{ textDecoration: "none" }}>
           <button className="create-assessment-btn-here">
             <span className="text">Create Assessment</span>
           </button>
+
         </Link>
+       
+        <UploadVideo
+        show={showModal}
+        handleClose={handleCloseModal}
+        handleSave={handleSaveVideo}
+        topic={currentTopic}
+      />
       </div>
     </>
   );

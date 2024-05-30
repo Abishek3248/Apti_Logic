@@ -19,6 +19,7 @@
       border-radius: 25px;
       position: absolute;
       left: 50%;
+      margin-bottom: 10px;
   }
 
   .create-assessment-btn-here:hover {
@@ -31,6 +32,7 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  
   }
 }
 
@@ -59,13 +61,13 @@ font-size: 2rem;
 
 .trainer-assessment-card {
 
-width: 200px;
-height:350px;
+width: 400px;
+height:300px;
 border-radius: 20px;
 background: #f5f5f5;
 position: relative;
 padding: 1.8rem;
-padding-top: 0;
+padding-top: 1 rem;
 border: 2px solid #008bf8;
 transition: 0.5s ease-out;
 overflow:hidden;
@@ -81,6 +83,7 @@ gap: .5em;
 display: grid;
 place-content: center;
 overflow: hidden;
+padding: 1 rem;
 }
 
 .trainer-assessment-card-button1 {
