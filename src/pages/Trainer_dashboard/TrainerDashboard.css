@@ -9,12 +9,12 @@
   }
 
   .trainer-assessment-card {
-
+    width: 80%;
     height:300px;
     border-radius: 20px;
     background: #f5f5f5;
     position: relative;
-    padding: 1.8rem;
+    padding: 5 rem;
     padding-top: 1 rem;
     border: 2px solid #000000;
     transition: 0.5s ease-out;
