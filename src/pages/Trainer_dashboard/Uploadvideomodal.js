@@ -31,7 +31,7 @@ function UploadVideo() {
         className="custom-button"
         onClick={handleShow}
       >
-        Update
+        Upload a solution video
       </button>
 
       {show && (

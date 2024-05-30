@@ -8,6 +8,21 @@
       flex-direction: column;
   }
 
+  .trainer-assessment-card {
+
+    height:300px;
+    border-radius: 20px;
+    background: #f5f5f5;
+    position: relative;
+    padding: 1.8rem;
+    padding-top: 1 rem;
+    border: 2px solid #000000;
+    transition: 0.5s ease-out;
+    overflow:hidden;
+    margin: 20px;
+    color: #03045E;
+    
+    }
   .create-assessment-btn-here {
       transform: translateX(-50%);
       font-weight: bold;
@@ -61,7 +76,6 @@ font-size: 2rem;
 
 .trainer-assessment-card {
 
-width: 400px;
 height:300px;
 border-radius: 20px;
 background: #f5f5f5;
