@@ -175,6 +175,7 @@ h1 {
 
 @media screen and (max-width: 800px) {
   .container {
+    margin-top: 200px;
     flex-direction: column;
   }
   
@@ -184,7 +185,7 @@ h1 {
   }
 
   .head {
-    top: 1%;
+    top: 25%;
     left: 26%;
 
     font-size: 3rem;

@@ -89,7 +89,7 @@ const LoginSignup = () => {
   };
 
   return (
-    <div className='container bubbles'>
+    <div className='container'>
       <div className='left'>
         <h1 className='head jersey-15-regular'>
           <span>Apti</span> <span>Logic</span>
