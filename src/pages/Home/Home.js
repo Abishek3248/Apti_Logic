@@ -13,6 +13,7 @@ import img1 from "./imgs/7618695.jpg"
 import carousal1 from "./imgs/7618695.jpg"
 import carousal2 from "./imgs/6342523.jpg"
 import carousal3 from "./imgs/8426454_3918929.jpg"
+import HomeSection from "./Carousal";
 
 function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -210,7 +211,7 @@ function Home() {
         </nav>
   
 
-        <div id="home" className="pt-24 p-4 text-center ">
+        {/* <div id="home" className="pt-24 p-4 text-center ">
   <div className="flex-1 flex flex-col justify-center items-center p-4 text-center">
     <h1 className="text-3xl font-bold mb-4 text-gray-800">Welcome to AptiLogic</h1>
     <p className="mb-4 text-lg text-gray-600">
@@ -254,7 +255,8 @@ function Home() {
       </button>
     </div>
   </div>
-</div>
+</div> */}
+<HomeSection/>
 
 
 
