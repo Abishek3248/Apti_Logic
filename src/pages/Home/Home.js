@@ -13,8 +13,6 @@ import img1 from "./imgs/7618695.jpg"
 import carousal1 from "./imgs/7618695.jpg"
 import carousal2 from "./imgs/6342523.jpg"
 import carousal3 from "./imgs/8426454_3918929.jpg"
-import Navbar from "../../components/Navbar";
-import HomeSection from "./Carousal";
 
 function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -117,7 +115,7 @@ function Home() {
   return (
     <>
       <div>
-        {/* <nav className="bg-white dark:bg-gray-900 fixed w-full z-20 top-0 start-0 border-b border-gray-200 dark:border-gray-600">
+        <nav className="bg-white dark:bg-gray-900 fixed w-full z-20 top-0 start-0 border-b border-gray-200 dark:border-gray-600">
           <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
             <a
               href="/"
@@ -209,10 +207,10 @@ function Home() {
               </ul>
             </div>
           </div>
-        </nav> */}
+        </nav>
   
-<Navbar/>
-        {/* <div id="home" className="pt-24 p-4 text-center ">
+
+        <div id="home" className="pt-24 p-4 text-center ">
   <div className="flex-1 flex flex-col justify-center items-center p-4 text-center">
     <h1 className="text-3xl font-bold mb-4 text-gray-800">Welcome to AptiLogic</h1>
     <p className="mb-4 text-lg text-gray-600">
@@ -256,10 +254,10 @@ function Home() {
       </button>
     </div>
   </div>
-</div> */}
+</div>
 
 
-<HomeSection/>
+
 
 
 
@@ -353,7 +351,7 @@ function Home() {
     
         </div>
 
-        <div id="contact" className="pt-24 p-4 " style={{"marginBottom":"300px"}}>
+        <div id="contact" className="pt-24 p-4 mb-10">
           <h1 className="text-3xl font-bold mb-4 text-center">Contact Us</h1>
           <p className="text-center">
             Have questions or need support? Reach out to us at{" "}
@@ -362,7 +360,7 @@ function Home() {
             </a>
           </p>
         </div>
-     
+
         {isModalOpen && (
           <div
             id="authentication-modal"
