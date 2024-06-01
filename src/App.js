@@ -10,15 +10,17 @@ import { UserProvider } from './pages/UserContext';
 import MentorDashboard from './pages/Mentor_Dashboard/MentorDashboard';
 import Analytics from './pages/Student_Dashboard/Analytics';
 import Forum from './pages/Student_Dashboard/Forum';
+
 function App() {
+    console.log()
     return (
         <UserProvider>
 
         <BrowserRouter>
             <Routes>
                 <Route index element={<Home/>} />
-                <Route path="trainer-dashboard" element={<TrainerDashboard />} />
-                <Route path="student-dashboard" element={<StudentDashboard />} />
+                <Route path="trainer-dashboard" element={<TrainerDashboard  />} />
+                <Route path="student-dashboard" element={<StudentDashboard />}/>
                 <Route path="mentor-dashboard" element={<MentorDashboard/>} />
                 <Route path="student-analytics/:assessmentId" element={<Analytics />} />
                 <Route path="forum/" element={<Forum />} />

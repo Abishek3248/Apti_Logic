@@ -28,7 +28,7 @@ function UploadVideo() {
     <>
       <button
         id="updateButton"
-        className="custom-button"
+        className="bg-blue-700 text-white py-2 px-4 rounded-lg hover:bg-blue-800 transition-colors"
         onClick={handleShow}
       >
         Upload a solution video

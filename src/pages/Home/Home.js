@@ -213,7 +213,18 @@ function Home() {
    */}
 
        <Navbar/>
-<HomeSection/>
+       <div id="home" className="pt-24 p-4 text-center">
+      <div className="flex-1 flex flex-col justify-center items-center p-4 text-center">
+        <h1 className="text-3xl font-bold mb-4 text-gray-800">Welcome to AptiLogic</h1>
+        <p className="mb-4 text-lg text-gray-600">
+          Master Aptitude and Logical Reasoning Skills with Ease
+        </p>
+      </div>
+
+      <div className="flex-1 flex items-center justify-center p-4">
+        <img className="w-full h-96 object-cover" src={carousal1} alt="Aptitude and Logical Reasoning" />
+      </div>
+    </div>
 
 
 
@@ -258,52 +269,46 @@ function Home() {
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Aptitude Training</h3>
             <p class="my-4">Comprehensive training modules designed to improve your aptitude skills.</p>
         </blockquote>
-        <figcaption class="flex items-center justify-center">
-            <img class="rounded-full w-9 h-9" src="https://via.placeholder.com/36" alt="service icon"/>
-            <div class="space-y-0.5 font-medium dark:text-white text-left rtl:text-right ms-3">
-                <div>AptiLogic</div>
-                <div class="text-sm text-gray-500 dark:text-gray-400">Service</div>
-            </div>
-        </figcaption>    
+           
     </figure>
     <figure class="flex flex-col items-center justify-center p-8 text-center bg-white border-b border-gray-200 md:rounded-se-lg dark:bg-gray-800 dark:border-gray-700">
         <blockquote class="max-w-2xl mx-auto mb-4 text-gray-500 lg:mb-8 dark:text-gray-400">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Mock Assessments</h3>
             <p class="my-4">Simulate real exam conditions with our timed mock assessments.</p>
         </blockquote>
-        <figcaption class="flex items-center justify-center">
+        {/* <figcaption class="flex items-center justify-center">
             <img class="rounded-full w-9 h-9" src="https://via.placeholder.com/36" alt="service icon"/>
             <div class="space-y-0.5 font-medium dark:text-white text-left rtl:text-right ms-3">
                 <div>AptiLogic</div>
                 <div class="text-sm text-gray-500 dark:text-gray-400">Service</div>
             </div>
-        </figcaption>    
+        </figcaption>     */}
     </figure>
     <figure class="flex flex-col items-center justify-center p-8 text-center bg-white border-b border-gray-200 md:rounded-es-lg md:border-b-0 md:border-e dark:bg-gray-800 dark:border-gray-700">
         <blockquote class="max-w-2xl mx-auto mb-4 text-gray-500 lg:mb-8 dark:text-gray-400">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Performance Analytics</h3>
             <p class="my-4">Detailed analytics to track your progress and identify areas for improvement.</p>
-        </blockquote>
-        <figcaption class="flex items-center justify-center">
+         </blockquote>
+        {/* <figcaption class="flex items-center justify-center">
             <img class="rounded-full w-9 h-9" src="https://via.placeholder.com/36" alt="service icon"/>
             <div class="space-y-0.5 font-medium dark:text-white text-left rtl:text-right ms-3">
                 <div>AptiLogic</div>
                 <div class="text-sm text-gray-500 dark:text-gray-400">Service</div>
             </div>
-        </figcaption>    
+        </figcaption>     */}
     </figure>
     <figure class="flex flex-col items-center justify-center p-8 text-center bg-white border-gray-200 rounded-b-lg md:rounded-se-lg dark:bg-gray-800 dark:border-gray-700">
         <blockquote class="max-w-2xl mx-auto mb-4 text-gray-500 lg:mb-8 dark:text-gray-400">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Community Support</h3>
             <p class="my-4">Join our community forum to ask questions and share knowledge.</p>
         </blockquote>
-        <figcaption class="flex items-center justify-center">
+        {/* <figcaption class="flex items-center justify-center">
             <img class="rounded-full w-9 h-9" src="https://via.placeholder.com/36" alt="service icon"/>
             <div class="space-y-0.5 font-medium dark:text-white text-left rtl:text-right ms-3">
                 <div>AptiLogic</div>
                 <div class="text-sm text-gray-500 dark:text-gray-400">Service</div>
             </div>
-        </figcaption>    
+        </figcaption>     */}
     </figure>
 </div>
 

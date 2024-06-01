@@ -1,7 +1,9 @@
-import React, { useState ,useEffect} from 'react';
-import { collection, getDocs, query, doc, getDoc,addDoc } from "firebase/firestore";
+import React, { useState, useEffect } from 'react';
+import { collection, getDocs, query, doc, getDoc, addDoc } from "firebase/firestore";
 import { db } from '../../firebase'; // Assuming db is the initialized Firestore instance
+import Navbar from '../../components/Navbar';
 import './AssessmentCreation.css';
+import NavbarLogin from '../../components/NavbarLogin';
 
 const TrainerAssessment = () => {
     const [assessmentDetails, setAssessmentDetails] = useState({
@@ -15,60 +17,58 @@ const TrainerAssessment = () => {
     const [questionstodisplay, setQuestionstodisplay] = useState([]);
 
     useEffect(() => {
-      const fetchAssessments = async () => {
-        const q = query(collection(db, "assessments"));
-        const querySnapshot = await getDocs(q);
-        const fetchedAssessments = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setAssessments(fetchedAssessments);
-  
-        fetchedAssessments.map(async (assessment) => {
-          const assessmentRef = doc(db, "assessments", assessment.id);
-          const assessmentSnapshot = await getDoc(assessmentRef);
-          if (assessmentSnapshot.exists()) {
-            const questionsRef = collection(assessmentRef, "questions");
-            const questionsSnapshot = await getDocs(questionsRef);
-            const questionsData = questionsSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-            setQuestions((prevQuestions) => [...prevQuestions, ...questionsData]);
-          }
-        });
-      };
-  
-      fetchAssessments();
+        const fetchAssessments = async () => {
+            const q = query(collection(db, "assessments"));
+            const querySnapshot = await getDocs(q);
+            const fetchedAssessments = querySnapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+            }));
+            setAssessments(fetchedAssessments);
+
+            fetchedAssessments.map(async (assessment) => {
+                const assessmentRef = doc(db, "assessments", assessment.id);
+                const assessmentSnapshot = await getDoc(assessmentRef);
+                if (assessmentSnapshot.exists()) {
+                    const questionsRef = collection(assessmentRef, "questions");
+                    const questionsSnapshot = await getDocs(questionsRef);
+                    const questionsData = questionsSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+                    setQuestions((prevQuestions) => [...prevQuestions, ...questionsData]);
+                }
+            });
+        };
+
+        fetchAssessments();
     }, []);
-  
+
     useEffect(() => {
-      const topicsMap = questions.reduce((acc, question) => {
-        if (!acc[question.topic]) {
-          acc[question.topic] = [];
-        }
-        if (!acc[question.topic].some((q) => q.questionText === question.questionText && JSON.stringify(q.options) === JSON.stringify(question.options))) {
-            acc[question.topic].push(question);
-        }
-        
-        return acc;
-      }, {});
-      setTopics(
-        Object.entries(topicsMap).map(([topic, questions]) => ({
-          topic,
-          questions,
-          open: false, // Initialize open state to false
-        }))
-      );
+        const topicsMap = questions.reduce((acc, question) => {
+            if (!acc[question.topic]) {
+                acc[question.topic] = [];
+            }
+            if (!acc[question.topic].some((q) => q.questionText === question.questionText && JSON.stringify(q.options) === JSON.stringify(question.options))) {
+                acc[question.topic].push(question);
+            }
+
+            return acc;
+        }, {});
+        setTopics(
+            Object.entries(topicsMap).map(([topic, questions]) => ({
+                topic,
+                questions,
+                open: false, // Initialize open state to false
+            }))
+        );
     }, [questions]);
-    
-    
-    console.log("topics", topics);
+
     const handleClick = (clickedTopic) => {
-      setTopics((prevTopics) =>
-        prevTopics.map((topic) =>
-          topic.topic === clickedTopic.topic ? { ...topic, open: !topic.open } : topic
-        )
-      );
+        setTopics((prevTopics) =>
+            prevTopics.map((topic) =>
+                topic.topic === clickedTopic.topic ? { ...topic, open: !topic.open } : topic
+            )
+        );
     };
-    
+
     const addQuestion = () => {
         const newQuestion = {
             questionText: '',
@@ -78,7 +78,6 @@ const TrainerAssessment = () => {
         };
         setQuestionstodisplay([...questionstodisplay, newQuestion]);
     };
-
 
     const generateQuestionSet = () => {
         const selectedQuestions = questions.filter((question) => selectedTopics.includes(question.topic));
@@ -90,9 +89,6 @@ const TrainerAssessment = () => {
         }, []);
         setQuestionstodisplay(selectedQuestionSet);
     };
-    
-    
-    
 
     const saveAssessment = async () => {
         try {
@@ -117,105 +113,117 @@ const TrainerAssessment = () => {
     };
 
     return (
-        <div className="trainer-assessment">
-            <h2 className="trainer-assessment-title">Trainer Assessment</h2>
-            <input
-                className="trainer-assessment-textfield"
-                type="text"
-                placeholder="Title"
-                value={assessmentDetails.title}
-                onChange={(e) => setAssessmentDetails({ ...assessmentDetails, title: e.target.value })}
-            />
-           
-            <input
-                className="trainer-assessment-textfield"
-                placeholder="Description"
-                type="text"
-                rows={9}
-                style={{"height":"100px","paddingTop":"0"}}
-                value={assessmentDetails.description}
-                onChange={(e) => setAssessmentDetails({ ...assessmentDetails, description: e.target.value })}
-            />
-            <button className="trainer-add-question-btn" onClick={generateQuestionSet}>
-                Generate Question Set
-            </button>
-            {topics.map((topic, index) => (
-                <div key={index}>
-                    <label>
-                        <input
-                            type="checkbox"
-                            className='cyberpunk-checkbox'
-                            checked={selectedTopics.includes(topic.topic)}
-                            onChange={() => {
-                                if (selectedTopics.includes(topic.topic)) {
-                                    setSelectedTopics(selectedTopics.filter((selectedTopic) => selectedTopic !== topic.topic));
-                                } else {
-                                    setSelectedTopics([...selectedTopics, topic.topic]);
-                                }
-                            }}
-                        />
-                        {topic.topic}
-                    </label>
-                </div>
-            ))}
-            {questionstodisplay.map((question, index) => (
-                <div key={index} className="trainer-question-box">
-                    <h3 className="trainer-question-title">Question {index + 1}</h3>
+        <div className="min-h-screen bg-gray-100">
+            <NavbarLogin/>
+                        <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+                <h2 className="text-3xl font-bold text-center text-blue-900 mt-10 animate-fade-in">Create a new assessment</h2>
+                <div className="bg-white p-6 rounded-lg shadow-lg mb-8 animate-fade-in">
                     <input
-                        className="trainer-option-textfield"
+                        className="w-full px-4 py-2 mb-4 border rounded-lg focus:outline-none focus:border-blue-500"
                         type="text"
-                        placeholder="Question Text"
-                        value={question.questionText}
-                        onChange={(e) => {
-                            const newQuestions = [...questionstodisplay];
-                            newQuestions[index].questionText = e.target.value;
-                            setQuestions(newQuestions);
-                        }}
+                        placeholder="Title"
+                        value={assessmentDetails.title}
+                        onChange={(e) => setAssessmentDetails({ ...assessmentDetails, title: e.target.value })}
                     />
-                    {question.options.map((option, optionIndex) => (
-                        <input
-                            key={optionIndex}
-                            className="trainer-option-textfield"
-                            type="text"
-                            placeholder={`Option ${optionIndex + 1}`}
-                            value={option}
-                            onChange={(e) => {
-                                const newQuestions = [...questionstodisplay];
-                                newQuestions[index].options[optionIndex] = e.target.value;
-                                setQuestionstodisplay(newQuestions);
-                            }}
-                        />
+                    <textarea
+                        className="w-full px-4 py-2 mb-4 border rounded-lg focus:outline-none focus:border-blue-500"
+                        placeholder="Description"
+                        rows={4}
+                        value={assessmentDetails.description}
+                        onChange={(e) => setAssessmentDetails({ ...assessmentDetails, description: e.target.value })}
+                    />
+                 
+                </div>
+
+                <div className="bg-white p-6 rounded-lg shadow-lg mb-8 animate-fade-in">
+                    <h4 className="text-xl font-semibold mb-4">Select Topics</h4>
+                    {topics.map((topic, index) => (
+                        <div key={index} className="mb-2">
+                            <label className="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    className="form-checkbox h-5 w-5 text-blue-600"
+                                    checked={selectedTopics.includes(topic.topic)}
+                                    onChange={() => {
+                                        if (selectedTopics.includes(topic.topic)) {
+                                            setSelectedTopics(selectedTopics.filter((selectedTopic) => selectedTopic !== topic.topic));
+                                        } else {
+                                            setSelectedTopics([...selectedTopics, topic.topic]);
+                                        }
+                                    }}
+                                />
+                                <span className="ml-2 text-gray-700">{topic.topic}</span>
+                            </label>
+                        </div>
                     ))}
-                    <input
-                        className="trainer-option-textfield"
-                        type="text"
-                        placeholder="Correct Answer"
-                        value={question.correctAnswer}
-                        onChange={(e) => {
-                            const newQuestions = [...questionstodisplay];
-                            newQuestions[index].correctAnswer = e.target.value;
-                            setQuestionstodisplay(newQuestions);
-                        }}
-                    />
-                    <input
-                        className="trainer-option-textfield"
-                        type="text"
-                        placeholder="Topic"
-                        value={question.topic}
-                        onChange={(e) => {
-                            const newQuestions = [...questionstodisplay];
-                            newQuestions[index].topic = e.target.value;
-                            setQuestionstodisplay(newQuestions);
-                        }}
-                    />
+                       <button className="w-full px-4 py-2 mb-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200 animate-fade-in" onClick={generateQuestionSet}>
+                        Generate Question Set
+                    </button>
                 </div>
-            ))}
-            <button className="trainer-add-question-btn" onClick={addQuestion}>
-                Add Question
-            </button>
-            <button className="trainer-save-assessment-btn" onClick={saveAssessment}>
-                Save Assessment
-            </button>
+
+                <div className="bg-white p-6 rounded-lg shadow-lg mb-8 animate-fade-in">
+                    <h4 className="text-xl font-semibold mb-4">Questions</h4>
+                    {questionstodisplay.map((question, index) => (
+                        <div key={index} className="mb-6">
+                            <h5 className="text-lg font-semibold mb-2">Question {index + 1}</h5>
+                            <input
+                                className="w-full px-4 py-2 mb-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                                type="text"
+                                placeholder="Question Text"
+                                value={question.questionText}
+                                onChange={(e) => {
+                                    const newQuestions = [...questionstodisplay];
+                                    newQuestions[index].questionText = e.target.value;
+                                    setQuestionstodisplay(newQuestions);
+                                }}
+                            />
+                            {question.options.map((option, optionIndex) => (
+                                <input
+                                    key={optionIndex}
+                                    className="w-full px-4 py-2 mb-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                                    type="text"
+                                    placeholder={`Option ${optionIndex + 1}`}
+                                    value={option}
+                                    onChange={(e) => {
+                                        const newQuestions = [...questionstodisplay];
+                                        newQuestions[index].options[optionIndex] = e.target.value;
+                                        setQuestionstodisplay(newQuestions);
+                                    }}
+                                />
+                            ))}
+                            <input
+                                className="w-full px-4 py-2 mb-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                                type="text"
+                                placeholder="Correct Answer"
+                                value={question.correctAnswer}
+                                onChange={(e) => {
+                                    const newQuestions = [...questionstodisplay];
+                                    newQuestions[index].correctAnswer = e.target.value;
+                                    setQuestionstodisplay(newQuestions);
+                                }}
+                            />
+                            <input
+                                className="w-full px-4 py-2 mb-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                                type="text"
+                                placeholder="Topic"
+                                value={question.topic}
+                                onChange={(e) => {
+                                    const newQuestions = [...questionstodisplay];
+                                    newQuestions[index].topic = e.target.value;
+                                    setQuestionstodisplay(newQuestions);
+                                }}
+                            />
+                        </div>
+                    ))}
+                    <button className="w-full px-4 py-2 mb-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200 animate-fade-in" onClick={addQuestion}>
+                        Add Question
+                    </button>
+                </div>
+
+                <button className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200 animate-fade-in" onClick={saveAssessment}>
+                    Save Assessment
+                </button>
+            </div>
         </div>
     );
 };

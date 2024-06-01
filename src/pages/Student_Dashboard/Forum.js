@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, addDoc, updateDoc, doc } from 'firebase/firestore';
 import { db } from '../../firebase';
-import "./Forum.css"
-function Forum() {
+import { AiOutlineQuestionCircle } from 'react-icons/ai';
+import { TiHeartOutline } from 'react-icons/ti';
+import { MdOutlineSearch } from 'react-icons/md';
+import { BiSolidUpvote } from "react-icons/bi";
 
+function Forum() {
     const [threads, setThreads] = useState([]);
     const [newQuestion, setNewQuestion] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [showModal, setShowModal] = useState(false);
+    const [showComments, setShowComments] = useState({});
 
     useEffect(() => {
         const fetchThreads = async () => {
@@ -13,7 +19,7 @@ function Forum() {
             const threadSnapshot = await getDocs(threadRef);
 
             const threadsData = threadSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setThreads(threadsData);
+            setThreads(threadsData.sort((a, b) => (b.upvotes - a.upvotes))); // Sort threads by upvotes
         };
 
         fetchThreads();
@@ -26,21 +32,19 @@ function Forum() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Add the new thread to Firestore
         await addDoc(collection(db, 'threads'), {
             question: newQuestion,
             comments: [],
             upvotes: 0
         });
 
-        // Fetch the updated list of threads
         const threadRef = collection(db, 'threads');
         const threadSnapshot = await getDocs(threadRef);
         const threadsData = threadSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setThreads(threadsData);
+        setThreads(threadsData.sort((a, b) => (b.upvotes - a.upvotes))); // Sort threads by upvotes
 
-        // Reset the new question input
         setNewQuestion('');
+        setShowModal(false);
     };
 
     const handleAddComment = async (threadId, newComment) => {
@@ -49,71 +53,168 @@ function Forum() {
             comments: [...threads.find(thread => thread.id === threadId).comments, { text: newComment, upvotes: 0 }]
         });
 
-        // Update the local state to reflect the new comment
         const updatedThreads = threads.map(thread =>
             thread.id === threadId
                 ? { ...thread, comments: [...thread.comments, { text: newComment, upvotes: 0 }] }
                 : thread
         );
-        setThreads(updatedThreads);
+        setThreads(updatedThreads.map(thread => ({ ...thread, comments: thread.comments.sort((a, b) => (b.upvotes - a.upvotes)) }))); // Sort comments by upvotes
     };
 
-    const handleUpvoteComment = async (threadId, commentIndex) => {
-        const threadDocRef = doc(db, 'threads', threadId);
-        const thread = threads.find(thread => thread.id === threadId);
-        const updatedComments = [...thread.comments];
-        updatedComments[commentIndex] = { ...updatedComments[commentIndex], upvotes: updatedComments[commentIndex].upvotes + 1 };
+    const handleUpvote = async (type, id, index) => {
+        const docRef = doc(db, 'threads', id);
+        const thread = threads.find(thread => thread.id === id);
 
-        await updateDoc(threadDocRef, { comments: updatedComments });
+        if (type === 'thread') {
+            const updatedUpvotes = thread.upvotes + 1;
+            await updateDoc(docRef, { upvotes: updatedUpvotes });
 
-        // Update the local state to reflect the upvoted comment
-        const updatedThreads = threads.map(thread =>
-            thread.id === threadId
-                ? { ...thread, comments: updatedComments }
-                : thread
-        );
-        setThreads(updatedThreads);
+            const updatedThreads = threads.map(thread =>
+                thread.id === id
+                    ? { ...thread, upvotes: updatedUpvotes }
+                    : thread
+            );
+            setThreads(updatedThreads.sort((a, b) => (b.upvotes - a.upvotes))); // Sort threads by upvotes
+        } else if (type === 'comment') {
+            const updatedComments = [...thread.comments];
+            updatedComments[index] = { ...updatedComments[index], upvotes: updatedComments[index].upvotes + 1 };
+
+            await updateDoc(docRef, { comments: updatedComments });
+
+            const updatedThreads = threads.map(thread =>
+                thread.id === id
+                    ? { ...thread, comments: updatedComments.sort((a, b) => (b.upvotes - a.upvotes)) }
+                    : thread
+            );
+            setThreads(updatedThreads); // Comments already sorted within each thread
+        }
     };
+
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value);
+    };
+
+    const toggleComments = (id) => {
+        setShowComments(prevState => ({ ...prevState, [id]: !prevState[id] }));
+    };
+
+    const filteredThreads = threads.filter(thread => thread.question.toLowerCase().includes(searchQuery.toLowerCase()));
 
     return (
-      <div className="forum-container">
-          <h1 className="forum-title">Forum</h1>
-          {threads.map(thread => (
-              <div className="thread" key={thread.id}>
-                  <h2>{thread.question}</h2>
-                  <p>Upvotes: {thread.upvotes}</p>
-                  <ul className="comments">
-                      {thread.comments && thread.comments.map((comment, index) => (
-                          <li className="comment" key={index}>
-                              <p className="comment-text">{comment.text} - Upvotes: {comment.upvotes}</p>
-                              <div className="comment-actions">
-                                  <button onClick={() => handleUpvoteComment(thread.id, index)}>Upvote</button>
-                              </div>
-                          </li>
-                      ))}
-                  </ul>
-                  <form onSubmit={(e) => {
-                      e.preventDefault();
-                      const newComment = e.target.elements.comment.value;
-                      if (newComment.trim() !== '') {
-                          handleAddComment(thread.id, newComment);
-                          e.target.elements.comment.value = '';
-                      }
-                  }}>
-                      <input type="text" name="comment" placeholder="Add a comment" />
-                      <button type="submit">Comment</button>
-                  </form>
-              </div>
-          ))}
-          <form onSubmit={handleSubmit}>
-              <label>
-                  Question:
-                  <input type="text" value={newQuestion} onChange={handleQuestionChange} />
-              </label>
-              <button type="submit">Submit</button>
-          </form>
-      </div>
-  );
+        <div className="max-w-3xl mx-auto p-6 bg-blue-50 shadow-lg rounded-lg mt-10">
+            <h1 className="text-3xl font-bold text-center mb-6">Discussion Forum</h1>
+            <div className="mb-4 flex justify-end">
+                <button
+                    onClick={() => setShowModal(true)}
+                    className="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                    type="button"
+                >
+                    Post a Question
+                </button>
+            </div>
+            {showModal && (
+                <div id="default-modal" tabIndex="-1" aria-hidden="true" className="fixed inset-0 z-50 flex items-center justify-center w-full p-4">
+                    <div className="relative w-full max-w-2xl bg-white rounded-lg shadow dark:bg-gray-700">
+                        <div className="flex items-center justify-between p-4 border-b rounded-t dark:border-gray-600">
+                            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                                Post a question
+                            </h3>
+                            <button
+                                type="button"
+                                className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                                onClick={() => setShowModal(false)}
+                            >
+                                <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                                </svg>
+                                <span className="sr-only">Close modal</span>
+                            </button>
+                        </div>
+                        <div className="p-4">
+                            <textarea
+                                value={newQuestion}
+                                onChange={handleQuestionChange}
+                                placeholder="Ask a question..."
+                                className="border border-blue-300 rounded-md p-2 mb-4 w-full"
+                            />
+                        </div>
+                        <div className="flex items-center p-4 border-t border-gray-200 rounded-b dark:border-gray-600">
+                            <button
+                                type="button"
+                                className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                                onClick={handleSubmit}
+                            >
+                                Post
+                            </button>
+                            <button
+                                type="button"
+                                className="py-2.5 px-5 ml-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                                onClick={() => setShowModal(false)}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            <div className="mb-4">
+                <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={handleSearchChange}
+                    placeholder="Search questions..."
+                    className="border border-blue-300 rounded-md px-2 py-1 mr-2"
+                />
+            </div>
+            {filteredThreads.map((thread, index) => (
+                <div key={thread.id} className={`${index % 2 === 0 ? 'bg-white' : 'bg-blue-100'} p-4 rounded-lg mb-8`}>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                            <AiOutlineQuestionCircle className="text-blue-500 mr-2" />
+                            <h2 className="text-lg font-semibold">{thread.question}</h2>
+                        </div>
+                        <div>
+                            <p className="text-sm text-gray-600">Upvotes: {thread.upvotes}</p>
+                            <button className="bg-blue-500 text-white px-2 py-1 rounded-md mt-2" onClick={() => handleUpvote('thread', thread.id)}>Upvote   <BiSolidUpvote />
+              </button>
+                        </div>
+                    </div>
+                    <button
+                        onClick={() => toggleComments(thread.id)}
+                        className="mt-2 text-blue-600 hover:underline"
+                    >
+                        {showComments[thread.id] ? 'Hide Comments' : 'View Comments'}
+                    </button>
+                    {showComments[thread.id] && (
+                        <div className="mt-4">
+                            {thread.comments.map((comment, commentIndex) => (
+                                <div key={commentIndex} className="bg-gray-100 p-2 rounded-md mb-2">
+                                    <p>{comment.text}</p>
+                                    <div className="flex justify-between items-center">
+                                        <p className="text-sm text-gray-600">Likes: {comment.upvotes}</p>
+                                        <button  onClick={() => handleUpvote('comment', thread.id, commentIndex)}><TiHeartOutline/> </button>
+                                    </div>
+                                </div>
+                            ))}
+                            <div className="mt-2">
+                                <textarea
+                                    placeholder="Add a comment..."
+                                    className="border border-blue-300 rounded-md p-2 mb-2 w-full"
+                                    onKeyDown={e => {
+                                        if (e.key === 'Enter' && !e.shiftKey) {
+                                            e.preventDefault();
+                                            handleAddComment(thread.id, e.target.value);
+                                            e.target.value = '';
+                                        }
+                                    }}
+                                />
+                            </div>
+                        </div>
+                    )}
+                </div>
+            ))}
+        </div>
+    );
 }
 
 export default Forum;

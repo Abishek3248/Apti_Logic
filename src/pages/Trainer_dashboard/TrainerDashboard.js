@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { collection, getDocs, query, doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "../../firebase";
-import "./TrainerDashboard.css";
 import { Link } from "react-router-dom";
 import UploadVideo from "./Uploadvideomodal"; // Import the updated UploadVideo component
+import NavbarLogin from "../../components/NavbarLogin";
 
 const TrainerDashboard = () => {
   const [assessments, setAssessments] = useState([]);
@@ -25,8 +25,9 @@ const TrainerDashboard = () => {
     };
 
     fetchData();
-  }, []); 
-  console.log("video",topicsforvideo)
+  }, []);
+  console.log("video", topicsforvideo);
+
   useEffect(() => {
     const fetchAssessments = async () => {
       const q = query(collection(db, "assessments"));
@@ -109,55 +110,47 @@ const TrainerDashboard = () => {
 
   return (
     <>
-   
-      <div className="trainer-overall">
-        <h2 className="trainer-head-here"> Trainer Dashboard </h2>
-        <div className="trainer-dashboard">
-          <div className="trainer-dashboard-title">
-            <h4 className="trainer-head-2-here"></h4>
-          </div>
-          <div className="trainer-dashboard-assessments">
+            <NavbarLogin/>
+
+      <div className="min-h-screen bg-gray-100 p-8">
+        <h2 className="text-3xl font-bold text-blue-700 mb-8">Trainer Dashboard</h2>
+        <div className="bg-white shadow-md rounded-lg p-6">
+          <h4 className="text-xl font-semibold mb-4">Assessments</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {topicsforvideo.map((topic, index) => (
-      
-              <div key={index} className="trainer-assessment-card">
-                <div onClick={() => handleClick(topic)}>
-                  <h5 className="text-title">{topic.topic}</h5>
-                  
-                 
-                      <iframe
-                        width="300"
-                        height="200"
-                        src={topic.videoLink}
-                        title="YouTube video player"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      ></iframe>
-                    
-                </div>
-                {/* <button
-                  className="upload-video-btn"
-                  onClick={() => handleShowModal(topic)}
-                >
-                  Upload Video
-                </button> */}
+              <div
+                key={index}
+                className="bg-blue-50 rounded-lg shadow p-4 hover:bg-blue-100 transition-colors"
+                onClick={() => handleClick(topic)}
+              >
+                <h5 className="text-lg font-semibold text-blue-900">{topic.topic}</h5>
+                {topic.videoLink && (
+                  <iframe
+                    className="mt-4"
+                    width="300"
+                    height="200"
+                    src={topic.videoLink}
+                    title="YouTube video player"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  ></iframe>
+                )}
               </div>
             ))}
           </div>
         </div>
-        <Link to="/create-assessment" style={{ textDecoration: "none" }}>
-          <button className="create-assessment-btn-here">
-            <span className="text">Create Assessment</span>
+        <Link to="/create-assessment" className="mt-8 inline-block">
+          <button className="bg-blue-700 text-white py-2 px-4 rounded-lg hover:bg-blue-800 transition-colors">
+            Create Assessment
           </button>
-
         </Link>
-       
         <UploadVideo
-        show={showModal}
-        handleClose={handleCloseModal}
-        handleSave={handleSaveVideo}
-        topic={currentTopic}
-      />
+          show={showModal}
+          handleClose={handleCloseModal}
+          handleSave={handleSaveVideo}
+          topic={currentTopic}
+        />
       </div>
     </>
   );

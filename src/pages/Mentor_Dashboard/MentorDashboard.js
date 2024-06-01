@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../firebase';
-import "./MentorDashboard.css"
+import "./MentorDashboard.css";
+import NavbarLogin from '../../components/NavbarLogin';
+
 const MentorDashboard = () => {
     const [assessments, setAssessments] = useState([]);
     const [selectedAssessmentId, setSelectedAssessmentId] = useState(null);
@@ -20,8 +22,8 @@ const MentorDashboard = () => {
 
     const fetchStudentScores = async () => {
         const usersQuerySnapshot = await getDocs(collection(db, 'users'));
-        const scoresMap = new Map(); // Map to store the best attempt for each student
-    
+        const scoresMap = new Map();
+
         usersQuerySnapshot.forEach((userDoc) => {
             const userData = userDoc.data();
             const userId = userDoc.id;
@@ -51,18 +53,15 @@ const MentorDashboard = () => {
                 }
             }
         });
-    
-        setStudentScores([...scoresMap.values()]); // Convert map values back to an array for rendering
+
+        setStudentScores([...scoresMap.values()]);
     };
-    
-    
-    
+
     const handleViewAnalytics = async (assessmentId) => {
         const q = query(collection(db, 'scores'), where('assessmentId', '==', assessmentId));
         const querySnapshot = await getDocs(q);
         const fetchedScores = querySnapshot.docs.map(doc => doc.data());
-        
-        // Filter out only the best attempt for each user
+
         const bestAttemptsMap = new Map();
         fetchedScores.forEach(score => {
             if (!bestAttemptsMap.has(score.userId)) {
@@ -74,20 +73,12 @@ const MentorDashboard = () => {
                 }
             }
         });
-    
+
         const bestAttempts = Array.from(bestAttemptsMap.values());
         setSelectedAssessmentId(assessmentId);
         setSelectedAssessmentScores(bestAttempts);
     };
-    
 
-    // const calculateOverallAnalytics = (userId) => {
-    //     const studentAttempts = selectedAssessmentScores.filter(score => score.userId === userId);
-    //     const totalAttempts = studentAttempts.length;
-    //     const totalScore = studentAttempts.reduce((acc, curr) => acc + curr.score, 0);
-    //     const averageScore = totalScore / totalAttempts;
-    //     return { totalAttempts, averageScore };
-    // };
     const calculateOverallAnalytics = (userId) => {
         const studentAttempts = selectedAssessmentScores.filter(score => score.userId === userId);
         const totalAttempts = studentAttempts.length;
@@ -95,78 +86,87 @@ const MentorDashboard = () => {
         const averageScore = totalScore / totalAttempts;
         return { totalAttempts, averageScore };
     };
-    
-    const studentAnalyticsMap = new Map(); // Create a map to store overall analytics for each student
-    
+
+    const studentAnalyticsMap = new Map();
     studentScores.forEach((studentScore) => {
         if (!studentAnalyticsMap.has(studentScore.userId)) {
             const { totalAttempts, averageScore } = calculateOverallAnalytics(studentScore.userId);
             studentAnalyticsMap.set(studentScore.userId, { totalAttempts, averageScore });
         }
-    
     });
+
     const closeAnalytics = () => {
         setSelectedAssessmentId(null);
         setSelectedAssessmentScores([]);
     };
-console.log()
+
     return (
-        <div className="mentor-dashboard-container">
-            <h1 className="analytics-title">Mentor Dashboard</h1>
-            <table className="dashboard-table">
-                <thead>
+        <div className="min-h-screen bg-gray-100 p-8">
+            <NavbarLogin/>
+            <h1 className="text-3xl font-bold text-center mb-8">Mentor Dashboard</h1>
+            <table className="w-full bg-white shadow-md rounded-lg overflow-hidden mb-8">
+                <thead className="bg-gray-200">
                     <tr>
-                        <th>Assessment Title</th>
-                        <th>Action</th>
+                        <th className="text-left p-4">Assessment Title</th>
+                        <th className="text-left p-4">Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     {assessments.map((assessment, index) => (
-                        <tr key={index} className={selectedAssessmentId === assessment.id ? 'selected-row' : 'normal-row'}>
-                            <td>{assessment.title}</td>
-                            <td>
-                                <button onClick={() => { fetchStudentScores(); handleViewAnalytics(assessment.id); }} className='view-analytics-btn'>View Analytics</button>
+                        <tr key={index} className={`hover:bg-gray-100 transition-all ${selectedAssessmentId === assessment.id ? 'bg-gray-200' : 'bg-white'}`}>
+                            <td className="p-4">{assessment.title}</td>
+                            <td className="p-4">
+                                <button
+                                    onClick={() => { fetchStudentScores(); handleViewAnalytics(assessment.id); }}
+                                    className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-all"
+                                >
+                                    View Analytics
+                                </button>
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
             {selectedAssessmentId && (
-                <div>
-                    <h2 className='analytics-title'>Overall Analytics</h2>
-                    <button onClick={closeAnalytics} className='close-analytics-btn'>Close</button>
-                    <table className="analytics-table">
-                        <thead>
+                <div className="bg-white p-6 rounded-lg shadow-lg">
+                    <h2 className="text-2xl font-bold mb-4">Overall Analytics</h2>
+                    <button
+                        onClick={closeAnalytics}
+                        className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-all mb-4"
+                    >
+                        Close
+                    </button>
+                    <table className="w-full bg-white shadow-md rounded-lg overflow-hidden">
+                        <thead className="bg-gray-200">
                             <tr>
-                                <th>Student Name</th>
-                                <th>Score</th>
-                                <th>Topics</th>
-                                {/* <th>Overall Analytics</th> */}
+                                <th className="text-left p-4">Student Name</th>
+                                <th className="text-left p-4">Score</th>
+                                <th className="text-left p-4">Topics</th>
                             </tr>
                         </thead>
                         <tbody>
                             {selectedAssessmentScores.map((score, index) => (
-                                <tr key={index}>
-                                    <td>{score.username}</td>
-                                    <td>{score.score}</td>
-                                    <td>
+                                <tr key={index} className="hover:bg-gray-100 transition-all">
+                                    <td className="p-4">{score.username}</td>
+                                    <td className="p-4">{score.score}</td>
+                                    <td className="p-4">
                                         {Object.entries(score.topicScores).map(([topic, topicScores]) => (
-                                            <div key={topic}>
-                                                <p>Topic: {topic}</p>
+                                            <div key={topic} className="mb-2">
+                                                <p className="font-semibold">Topic: {topic}</p>
                                                 <p>Correct Answers: {topicScores.correctAnswers}</p>
                                                 <p>Wrong Answers: {topicScores.wrongAnswers}</p>
                                                 <p>Total Questions: {topicScores.totalQuestions}</p>
                                             </div>
                                         ))}
                                     </td>
-                                    <td>
-    {studentAnalyticsMap.has(score.userId) && (
-        <div>
-            {/* <p>Total Attempts: {studentAnalyticsMap.get(score.userId).totalAttempts}</p> */}
-            {/* <p>Average Score: {studentAnalyticsMap.get(score.userId).averageScore.toFixed(2)}</p> */}
-        </div>
-    )}
-</td>
+                                    <td className="p-4">
+                                        {studentAnalyticsMap.has(score.userId) && (
+                                            <div>
+                                                <p>Total Attempts: {studentAnalyticsMap.get(score.userId).totalAttempts}</p>
+                                                <p>Average Score: {studentAnalyticsMap.get(score.userId).averageScore.toFixed(2)}</p>
+                                            </div>
+                                        )}
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
