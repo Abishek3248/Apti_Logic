@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { collection, doc, getDoc, getDocs, addDoc, updateDoc, arrayUnion } from 'firebase/firestore';
 import { db, auth } from '../../firebase';
+import NavbarLogin from '../../components/NavbarLogin';
 
 const Assessment = () => {
     const { assessmentId } = useParams();
@@ -108,7 +109,10 @@ const Assessment = () => {
     }
 
     return (
+        <>
+        <NavbarLogin/>
         <div className="max-w-6xl mx-auto p-6 bg-gray-100 shadow-lg rounded-lg mt-10">
+
             <div className="text-center mb-8">
                 <h1 className="text-4xl font-bold mb-4 text-blue-700">{assessment.title}</h1>
                 <p className="text-gray-600">Test your knowledge by answering the questions below.</p>
@@ -186,6 +190,7 @@ const Assessment = () => {
                 )}
             </div>
         </div>
+        </>
     );
 };
 

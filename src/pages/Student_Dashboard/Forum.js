@@ -106,7 +106,7 @@ function Forum() {
             <div className="mb-4 flex justify-end">
                 <button
                     onClick={() => setShowModal(true)}
-                    className="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                    className="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
                     type="button"
                 >
                     Post a Question
@@ -114,14 +114,14 @@ function Forum() {
             </div>
             {showModal && (
                 <div id="default-modal" tabIndex="-1" aria-hidden="true" className="fixed inset-0 z-50 flex items-center justify-center w-full p-4">
-                    <div className="relative w-full max-w-2xl bg-white rounded-lg shadow dark:bg-gray-700">
-                        <div className="flex items-center justify-between p-4 border-b rounded-t dark:border-gray-600">
-                            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                    <div className="relative w-full max-w-2xl bg-white rounded-lg shadow">
+                        <div className="flex items-center justify-between p-4 border-b rounded-t">
+                            <h3 className="text-xl font-semibold text-gray-900">
                                 Post a question
                             </h3>
                             <button
                                 type="button"
-                                className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                                className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center"
                                 onClick={() => setShowModal(false)}
                             >
                                 <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
@@ -138,17 +138,17 @@ function Forum() {
                                 className="border border-blue-300 rounded-md p-2 mb-4 w-full"
                             />
                         </div>
-                        <div className="flex items-center p-4 border-t border-gray-200 rounded-b dark:border-gray-600">
+                        <div className="flex items-center p-4 border-t border-gray-200 rounded-b">
                             <button
                                 type="button"
-                                className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                                className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
                                 onClick={handleSubmit}
                             >
                                 Post
                             </button>
                             <button
                                 type="button"
-                                className="py-2.5 px-5 ml-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                                className="py-2.5 px-5 ml-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100"
                                 onClick={() => setShowModal(false)}
                             >
                                 Cancel
@@ -165,6 +165,7 @@ function Forum() {
                     placeholder="Search questions..."
                     className="border border-blue-300 rounded-md px-2 py-1 mr-2"
                 />
+                <MdOutlineSearch className="inline-block text-blue-500" />
             </div>
             {filteredThreads.map((thread, index) => (
                 <div key={thread.id} className={`${index % 2 === 0 ? 'bg-white' : 'bg-blue-100'} p-4 rounded-lg mb-8`}>
@@ -175,40 +176,54 @@ function Forum() {
                         </div>
                         <div>
                             <p className="text-sm text-gray-600">Upvotes: {thread.upvotes}</p>
-                            <button className="bg-blue-500 text-white px-2 py-1 rounded-md mt-2" onClick={() => handleUpvote('thread', thread.id)}>Upvote   <BiSolidUpvote />
-              </button>
+                            <button className="bg-blue-500 text-white px-2 py-1 rounded-md mt-2 flex items-center" onClick={() => handleUpvote('thread', thread.id)}>Upvote <BiSolidUpvote className="ml-1" />
+                            </button>
                         </div>
                     </div>
                     <button
                         onClick={() => toggleComments(thread.id)}
                         className="mt-2 text-blue-600 hover:underline"
                     >
-                        {showComments[thread.id] ? 'Hide Comments' : 'View Comments'}
+                        {showComments[thread.id] ? 'Hide Comments' : 'Show Comments'}
                     </button>
                     {showComments[thread.id] && (
                         <div className="mt-4">
-                            {thread.comments.map((comment, commentIndex) => (
-                                <div key={commentIndex} className="bg-gray-100 p-2 rounded-md mb-2">
-                                    <p>{comment.text}</p>
-                                    <div className="flex justify-between items-center">
-                                        <p className="text-sm text-gray-600">Likes: {comment.upvotes}</p>
-                                        <button  onClick={() => handleUpvote('comment', thread.id, commentIndex)}><TiHeartOutline/> </button>
+                            {thread.comments.map((comment, index) => (
+                                <div key={index} className="border-t pt-2 mt-2">
+                                    <div className="flex justify-between">
+                                        <p>{comment.text}</p>
+                                        <div>
+                                            <p className="text-sm text-gray-600">Upvotes: {comment.upvotes}</p>
+                                            <button className="bg-blue-500 text-white px-2 py-1 rounded-md mt-2 flex items-center" onClick={() => handleUpvote('comment', thread.id, index)}>Upvote <BiSolidUpvote className="ml-1" />
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
-                            <div className="mt-2">
-                                <textarea
+                            <form
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    const newComment = e.target.newComment.value;
+                                    if (newComment.trim() !== '') {
+                                        handleAddComment(thread.id, newComment);
+                                        e.target.newComment.value = '';
+                                    }
+                                }}
+                                className="mt-4"
+                            >
+                                <input
+                                    type="text"
+                                    name="newComment"
                                     placeholder="Add a comment..."
-                                    className="border border-blue-300 rounded-md p-2 mb-2 w-full"
-                                    onKeyDown={e => {
-                                        if (e.key === 'Enter' && !e.shiftKey) {
-                                            e.preventDefault();
-                                            handleAddComment(thread.id, e.target.value);
-                                            e.target.value = '';
-                                        }
-                                    }}
+                                    className="border border-blue-300 rounded-md px-2 py-1 mr-2"
                                 />
-                            </div>
+                                <button
+                                    type="submit"
+                                    className="bg-blue-500 text-white px-2 py-1 rounded-md"
+                                >
+                                    Add Comment
+                                </button>
+                            </form>
                         </div>
                     )}
                 </div>

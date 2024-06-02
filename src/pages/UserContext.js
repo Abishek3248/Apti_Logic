@@ -18,7 +18,7 @@ export const UserProvider = ({ children }) => {
     // Clean up the subscription
     return () => unsubscribe();
   }, []);
-
+console.log("user",user)
   return (
     <UserContext.Provider value={{ user, setUser }}>
       {children}

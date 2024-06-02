@@ -15,6 +15,7 @@ import carousal2 from "./imgs/6342523.jpg"
 import carousal3 from "./imgs/8426454_3918929.jpg"
 import HomeSection from "./Carousal";
 import Navbar from "../../components/Navbar";
+import ContactForm from "./Form";
 
 function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -318,11 +319,15 @@ function Home() {
         <div id="contact" className="pt-24 p-4 mb-10">
           <h1 className="text-3xl font-bold mb-4 text-center">Contact Us</h1>
           <p className="text-center">
-            Have questions or need support? Reach out to us at{" "}
-            <a href="mailto:support@aptilogic.com" className="text-blue-600">
-              support@aptilogic.com
-            </a>
+            Have questions or need support? Reach out to us .
+          
+
           </p>
+          <div class="flex justify-center">
+          <ContactForm/>
+
+          </div>
+
         </div>
 
         {isModalOpen && (

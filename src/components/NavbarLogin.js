@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../pages/UserContext';
 import { auth } from '../firebase';
@@ -7,6 +7,7 @@ import { signOut } from "firebase/auth";
 const NavbarLogin = () => {
   const { user } = useUser();
   const navigate = useNavigate();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = async () => {
     await signOut(auth);
@@ -24,23 +25,55 @@ const NavbarLogin = () => {
           />
           <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white ml-2">AptiLogic</span>
         </a>
-        {console.log(user)}
-        {user && (
-          <div className="flex items-center space-x-4">
-            <span className="text-gray-700 dark:text-gray-200">Welcome, {user.username || user.email}</span>
-            <button
-              onClick={handleLogout}
-              className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-            >
-              Logout
-            </button>
-            {/* <img
-              src="https://via.placeholder.com/40"
-              alt="Profile"
-              className="rounded-full w-10 h-10"
-            /> */}
-          </div>
-        )}
+        <button 
+          className="block lg:hidden focus:outline-none" 
+          className={`${isMobileMenuOpen ? 'block lg:hidden focus:outline-none z-10' : 'block lg:hidden focus:outline-none'}`}
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        >
+          <svg
+            className="h-6 w-6 text-gray-500"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M4 6h16M4 12h16m-7 6h7"
+            />
+          </svg>
+        </button>
+          {console.log(isMobileMenuOpen)}
+        <div className={`${isMobileMenuOpen ? 'block absolute top-0 right-0' : 'hidden'} lg:hidden `}>
+        {console.log(isMobileMenuOpen)}
+
+          {user && (
+
+            <div className="flex flex-col items-start space-y-4 mt-10">
+              <span className="text-gray-700 dark:text-gray-200">Welcome, {user.username || user.email}</span>
+              <button
+                onClick={handleLogout}
+                className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              >
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
+        <div className="hidden lg:flex lg:items-center lg:space-x-4">
+          {user && (
+            <div className="flex items-center space-x-4">
+              <span className="text-gray-700 dark:text-gray-200">Welcome, {user.username || user.email}</span>
+              <button
+                onClick={handleLogout}
+                className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              >
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </nav>
   );

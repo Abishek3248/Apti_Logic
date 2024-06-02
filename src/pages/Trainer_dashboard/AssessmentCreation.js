@@ -15,6 +15,7 @@ const TrainerAssessment = () => {
     const [topics, setTopics] = useState([]);
     const [selectedTopics, setSelectedTopics] = useState([]);
     const [questionstodisplay, setQuestionstodisplay] = useState([]);
+    const [showTooltip, setShowTooltip] = useState(false);
 
     useEffect(() => {
         const fetchAssessments = async () => {
@@ -115,8 +116,31 @@ const TrainerAssessment = () => {
     return (
         <div className="min-h-screen bg-gray-100">
             <NavbarLogin/>
-                        <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
-                <h2 className="text-3xl font-bold text-center text-blue-900 mt-10 animate-fade-in">Create a new assessment</h2>
+            <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+                <div className="flex justify-center items-center space-x-2 mt-10">
+                    <h2 className="text-3xl font-bold text-center text-blue-900 animate-fade-in">Create a new assessment</h2>
+                    <div className="relative group">
+                        <svg
+                            className="w-6 h-6 text-blue-900 cursor-pointer"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg"
+                            onMouseEnter={() => setShowTooltip(true)}
+                            onMouseLeave={() => setShowTooltip(false)}
+                        >
+                            <path fillRule="evenodd" d="M18 10c0 4.418-3.582 8-8 8S2 14.418 2 10 5.582 2 10 2s8 3.582 8 8zm-9 4a1 1 0 102 0v-4a1 1 0 10-2 0v4zm0-6a1 1 0 112 0 1 1 0 01-2 0z" clipRule="evenodd" />
+                        </svg>
+                        {showTooltip && (
+                            <div className="absolute  w-64 p-2 bg-white border rounded shadow-lg text-sm text-gray-700">
+                                You can generate a question set by selecting topics or add questions manually.
+                            </div>
+                        )}
+                    </div>
+                </div>
+                
+
+
+
                 <div className="bg-white p-6 rounded-lg shadow-lg mb-8 animate-fade-in">
                     <input
                         className="w-full px-4 py-2 mb-4 border rounded-lg focus:outline-none focus:border-blue-500"
@@ -132,7 +156,6 @@ const TrainerAssessment = () => {
                         value={assessmentDetails.description}
                         onChange={(e) => setAssessmentDetails({ ...assessmentDetails, description: e.target.value })}
                     />
-                 
                 </div>
 
                 <div className="bg-white p-6 rounded-lg shadow-lg mb-8 animate-fade-in">
@@ -156,7 +179,7 @@ const TrainerAssessment = () => {
                             </label>
                         </div>
                     ))}
-                       <button className="w-full px-4 py-2 mb-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200 animate-fade-in" onClick={generateQuestionSet}>
+                    <button className="w-full px-4 py-2 mb-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200 animate-fade-in" onClick={generateQuestionSet}>
                         Generate Question Set
                     </button>
                 </div>
@@ -229,3 +252,4 @@ const TrainerAssessment = () => {
 };
 
 export default TrainerAssessment;
+

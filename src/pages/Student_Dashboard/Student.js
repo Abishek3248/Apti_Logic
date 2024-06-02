@@ -109,22 +109,25 @@ const StudentDashboard = () => {
             </div>
 
             {showModal && (
-                <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-                    <div className="bg-white p-4 rounded-lg shadow-lg relative">
-                        <button onClick={handleCloseModal} className="absolute top-2 right-2 text-gray-700">
-                            &times;
-                        </button>
-                        <iframe
-                            className="mt-4"
-                            w-max
-                            height="315"
-                            src={selectedVideoUrl}
-                            title="YouTube video player"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                        ></iframe>
-                    </div>
-                </div>
+             <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+             <div className="bg-white p-4 rounded-lg shadow-lg relative" style={{ width: '70%', height: '35vw' }}>
+                 <button onClick={handleCloseModal} className="absolute top-2 right-2 text-gray-700">
+                     &times;
+                 </button>
+                 <iframe
+                     className="mt-4"
+                     width="100%"
+                     height="100%"
+                     src={selectedVideoUrl}
+                     title="YouTube video player"
+                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                     allowFullScreen
+                 ></iframe>
+             </div>
+         </div>
+         
+          
+            
             )}
         </div>
     );
