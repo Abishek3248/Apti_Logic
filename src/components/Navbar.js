@@ -7,6 +7,7 @@ import {
 import { setDoc, doc, getDoc } from "firebase/firestore";
 import { db, auth } from '../firebase';
 import { useUser } from '../pages/UserContext';
+import ThemeToggle from './Themetoggle';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -135,7 +136,6 @@ const Navbar = () => {
             >
               Login/Signup
             </button>
-
             <button
               onClick={toggleMenu}
               type="button"

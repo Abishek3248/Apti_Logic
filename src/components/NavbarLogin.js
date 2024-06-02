@@ -26,7 +26,6 @@ const NavbarLogin = () => {
           <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white ml-2">AptiLogic</span>
         </a>
         <button 
-          className="block lg:hidden focus:outline-none" 
           className={`${isMobileMenuOpen ? 'block lg:hidden focus:outline-none z-10' : 'block lg:hidden focus:outline-none'}`}
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
